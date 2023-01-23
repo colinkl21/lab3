@@ -18,34 +18,77 @@ nobel <- read_csv("data/nobel.csv")
 ## Exercises
 
 ### Exercise 1
+```{r}
+summary(nobel)
+names(nobel)
+glimpse(nobel)
+# 935 observations and 26 variables in the dataset. Each row is a participant
 
-Remove this text, and add your answer for Exercise 1 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+```
 
 ### Exercise 2
+```{r}
 
-Remove this text, and add your answer for Exercise 1 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+nobel_living <- nobel %>% 
+  filter(country!="NA" & gender!="org" & is.na(died_date))
+
+nobel_living <- nobel_living %>%
+  mutate(
+    country_us = if_else(country == "USA", "USA", "Other")
+  )
+
+nobel_living_science <- nobel_living %>%
+  filter(category %in% c("Physics", "Medicine", "Chemistry", "Economics"))
+
+```
+
 
 ### Exercise 3
+```{r}
+library(ggsci)
+ggplot(nobel_living_science, aes(x = category, fill = country_us) ) + 
+geom_bar( position = "stack" ) +
+coord_flip() + ylab("number of winners") +
+theme_minimal() + theme( legend.position = "bottom" ) + scale_fill_npg()+ggtitle("Nobel Prize winners by category and based country")
 
-Remove this text, and add your answer for Exercise 1 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+#"Most living Nobel laureates in the sciences are based in the US. But many of them were born in other countries." The first part of this claim is true, we can see that more USA based scientists win nobel prizes than other country based scientists. We cannot evaluate the second part of this claim because we haven't taken their birth country into account. 
+```
+
 
 ### Exercise 4
+```{r}
+nobel_living_science <- nobel_living_science %>%
+  mutate(
+    born_country_us = if_else(born_country == "USA", "USA", "Other")
+  )
+
+
+#105 winners were born in the U.S.
+```
+count(nobel_living_science$born_country_us)
 
 ...
 
 ### Exercise 5
+```{r}
+ggplot(nobel_living_science, aes(x = category, y = "", fill = born_country_us) )    + facet_wrap(~ country_us) + 
+geom_bar( stat = "identity", position = "stack" ) +
+coord_flip() + ylab("number of winners") +
+theme_minimal() + theme( legend.position = "bottom" ) + scale_fill_npg()+ggtitle("Nobel Prize winners by category and country of birth")
+
+#Based on your visualization, do the data appear to support Buzzfeed’s claim? I would still say yes. The majority of USA winners are U.S. born (which is not surprising), but there is a certain number of foreign born winners in each category. So we could say that immigration is important to  science. 
+
+```
 
 ...
 
 ### Exercise 6
+```{r}
+
+#for science prizes only
+nobel_living_science %>% 
+  filter(country=="USA" & born_country!="USA") %>% select(born_country) %>% group_by(born_country) %>% dplyr::count(sort = TRUE)
+
+```
 
 ...
