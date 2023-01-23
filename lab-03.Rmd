@@ -60,12 +60,14 @@ theme_minimal() + theme( legend.position = "bottom" ) + scale_fill_npg()+ggtitle
 nobel_living_science <- nobel_living_science %>%
   mutate(
     born_country_us = if_else(born_country == "USA", "USA", "Other")
-  )
+  ) 
 
+nobel_living_science %>%
+  group_by(born_country_us) %>% 
+  dplyr::count(born_country_us)
 
 #105 winners were born in the U.S.
 ```
-count(nobel_living_science$born_country_us)
 
 ...
 
